@@ -1,7 +1,9 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import { prisma } from "../../config/db";
 
-const createUserService = async (payload: Prisma.UserCreateInput) => {
+const createUserService = async (
+  payload: Prisma.UserCreateInput
+): Promise<User> => {
   console.log(payload);
   const result = await prisma.user.create({
     data: payload,
@@ -9,6 +11,30 @@ const createUserService = async (payload: Prisma.UserCreateInput) => {
   return result;
   // Implementation of user service
 };
+
+const getAllUsers = async () => {
+  const result = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      role: true,
+      picture: true,
+      isVerified: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return result;
+  // Implementation of user service
+};
+
 export const UsersService = {
   createUserService,
+  getAllUsers,
 };
