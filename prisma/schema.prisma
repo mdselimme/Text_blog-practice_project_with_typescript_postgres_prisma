@@ -18,13 +18,14 @@ model User {
   name String
   email String @unique
   password String?
-  role Role @default(USERS)
+  role Role @default(USER)
   phone String
   picture String?
   status UserStatus @default(ACTIVE)
   isVerified Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  posts Post[]
 }
 
 model Post {
@@ -35,10 +36,10 @@ model Post {
   isFeatured Boolean @default(false)
   tags String[]
   views Int @default(0)
-  authorId String
+  authorId Int
+  author User @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
 }
 
 enum UserStatus {
@@ -51,5 +52,5 @@ enum UserStatus {
 enum Role {
 SUPER_ADMIN
 ADMIN
-USERS
+USER
 }
