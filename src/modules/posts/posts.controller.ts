@@ -16,9 +16,15 @@ const createPost = async (req: Request, res: Response) => {
 };
 
 const getAllPost = async (req: Request, res: Response) => {
-  // const body = req.body;
 
-  const result = await PostService.getAllPost();
+  const { page, limit, search, sort } = req.query;
+
+  const pageNumber = page ? Number(page) : 1;
+  const postLimit = limit ? Number(limit) : 5;
+  const searchData = search ? search : "";
+  const sortData = sort === "asc" ? "asc" : "desc"
+
+  const result = await PostService.getAllPost(pageNumber, postLimit, searchData as string, sortData);
 
   sendResponse(res, {
     success: true,
