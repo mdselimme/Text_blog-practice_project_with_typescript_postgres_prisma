@@ -1,5 +1,6 @@
 import { Prisma, User } from "@prisma/client";
 import { prisma } from "../../config/db";
+import { error } from "console";
 
 const createUserService = async (
   payload: Prisma.UserCreateInput
@@ -56,8 +57,29 @@ const getSingleUser = async (id: number) => {
   // Implementation of user service
 };
 
+const deleteUser = async (id: number) => {
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: id
+    }
+  });
+
+  if (!user) {
+    throw new Error("User Not found.")
+  }
+
+  await prisma.user.delete({
+    where: {
+      id: id,
+    }
+  });
+
+};
+
 export const UsersService = {
   createUserService,
   getAllUsers,
   getSingleUser,
+  deleteUser
 };
