@@ -1,6 +1,6 @@
 import { Prisma, User } from "@prisma/client";
 import { prisma } from "../../config/db";
-import { error } from "console";
+
 
 const createUserService = async (
   payload: Prisma.UserCreateInput
@@ -26,6 +26,7 @@ const getAllUsers = async () => {
       status: true,
       createdAt: true,
       updatedAt: true,
+      posts: true
     },
     orderBy: {
       createdAt: "desc",
@@ -51,10 +52,10 @@ const getSingleUser = async (id: number) => {
       status: true,
       createdAt: true,
       updatedAt: true,
+      posts: true
     },
   });
   return result;
-  // Implementation of user service
 };
 
 const deleteUser = async (id: number) => {
