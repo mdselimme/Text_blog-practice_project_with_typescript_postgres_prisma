@@ -25,8 +25,6 @@ const createAPost = async (payload: Prisma.PostCreateInput): Promise<Post> => {
 const getAllPost = async (pageNumber: number, postLimit: number, searchData: string, sortData: string, featured: boolean, tags?: string[]
 ) => {
 
-    console.log(tags)
-
     const skip = (pageNumber - 1) * postLimit
 
     const where: any = {
@@ -60,11 +58,52 @@ const getAllPost = async (pageNumber: number, postLimit: number, searchData: str
         }
     });
 
-    return result;
+    const total = await prisma.post.count({ where });
+
+    return {
+        meta: {
+            total,
+            page: pageNumber,
+            limit: postLimit,
+            totalPages: Math.round(total / postLimit)
+        },
+        data: result
+    };
 
 };
 
+const getAPostById = async (id: number) => {
+
+    return prisma.$transaction(async (tx) => {
+
+        await tx.post.update({
+            where: { id },
+            data: {
+                views: {
+                    increment: 1
+                }
+            }
+        })
+
+        return await tx.post.findUnique({
+            where: { id },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true
+                    }
+                }
+            }
+        });
+
+    })
+
+}
+
 export const PostService = {
     createAPost,
-    getAllPost
+    getAllPost,
+    getAPostById
 }
