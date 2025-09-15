@@ -51,8 +51,22 @@ const getAPostById = async (req: Request, res: Response) => {
   })
 };
 
+
+const getStatsOfPosts = async (req: Request, res: Response) => {
+
+  const result = await PostService.getStatsOfPosts();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "all posts stats",
+    data: result
+  })
+}
+
 export const PostController = {
   createPost,
   getAllPost,
-  getAPostById
+  getAPostById,
+  getStatsOfPosts
 };

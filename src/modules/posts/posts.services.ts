@@ -97,13 +97,66 @@ const getAPostById = async (id: number) => {
                 }
             }
         });
+    })
+};
+
+
+const getStatsOfPosts = async () => {
+    return await prisma.$transaction(async (tx) => {
+        const postAggregation = await tx.post.aggregate({
+            _count: true,
+            _sum: { views: true },
+            _avg: { views: true },
+            _max: { views: true },
+            _min: { views: true }
+        });
+
+        const featuredCount = await tx.post.count({
+            where: {
+                isFeatured: true
+            }
+        });
+
+        const topFeatured = await tx.post.findFirst({
+            where: {
+                isFeatured: true
+            },
+            orderBy: { views: "desc" }
+        });
+
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+
+        const lastWeekPostCount = await tx.post.count({
+            where: {
+                createdAt: {
+                    gte: lastWeek
+                }
+            }
+        })
+
+
+        return {
+            postStats: {
+                totalPost: postAggregation._count,
+                totalViews: postAggregation._sum.views ?? 0,
+                totalAverageViews: postAggregation._avg.views ?? 0,
+                minViews: postAggregation._min.views ?? 0,
+                maxViews: postAggregation._max.views ?? 0,
+            },
+            featuredPost: {
+                count: featuredCount,
+                topPost: topFeatured
+            },
+            lastWeekPostCount
+        }
 
     })
-
 }
 
 export const PostService = {
     createAPost,
     getAllPost,
-    getAPostById
+    getAPostById,
+    getStatsOfPosts
 }
