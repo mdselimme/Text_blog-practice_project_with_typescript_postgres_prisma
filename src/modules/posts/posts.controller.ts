@@ -17,18 +17,21 @@ const createPost = async (req: Request, res: Response) => {
 
 const getAllPost = async (req: Request, res: Response) => {
 
-  const { page, limit, search, sort } = req.query;
+  const { page, limit, search, sort, isFeatured, tags } = req.query;
 
   const pageNumber = page ? Number(page) : 1;
   const postLimit = limit ? Number(limit) : 5;
   const searchData = search ? search : "";
-  const sortData = sort === "asc" ? "asc" : "desc"
+  const sortData = sort === "asc" ? "asc" : "desc";
+  const featured = isFeatured === "true" ? true : false;
+  const tagsData = tags ? (tags as string).split(",") : []
+  const result = await PostService.getAllPost(pageNumber, postLimit, searchData as string, sortData, featured as boolean, tagsData as string[]);
 
-  const result = await PostService.getAllPost(pageNumber, postLimit, searchData as string, sortData);
+
 
   sendResponse(res, {
     success: true,
-    statusCode: 201,
+    statusCode: 200,
     message: "All Post Retrieved successfully.",
     data: result
   })
